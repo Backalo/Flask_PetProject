@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 2</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Niveles</h1>
+        
+    <!-- Progress Bar 1 -->
+    <label for="progress1">Nivel de agua</label><br/>
+    <div class = "progress-container">
+        <progress id="progress1" max="100" value="{{ progress1 }}"></progress>
+        <div class="progress-text1">{{ progress1 }}%</div>
+    </div>
+
+    <!-- Input for Progress Bar 1 -->
+    <label for="inputProgress1">Ingresa nivel de agua</label>
+    <input type="number" id="inputProgress1" name="inputProgress1" value={{ progress1 }} min="0" max="100"><br/>
+
+    <!-- Progress Bar 2 -->
+    <label for="progress2">Nivel de alimento</label><br/>
+    <div class = "progress-container">
+        <progress id="progress2" max="100" value="{{ progress2 }}"></progress>
+        <div class="progress-text2">{{ progress2 }}%</div>
+    </div>
+
+    <!-- Input for Progress Bar 2 -->
+    <label for="inputProgress2">Ingresa nivel de alimento</label>
+    <input type="number" id="inputProgress2" name="inputProgress2" value="{{ progress2 }}" min="0" max="100"><br/>
+
+    <!-- Submit Button to Update Progress -->
+    <button class="btn" onclick="updateProgress()">Update Progress</button>
+
+    <script>
+        // JavaScript function to update progress bars
+        function updateProgress() {
+            var progress1Value = parseInt(document.getElementById("inputProgress1").value);
+            var progress2Value = parseInt(document.getElementById("inputProgress2").value);
+
+            // You can use AJAX to send the values to the server if needed
+            // For simplicity, this example updates the values directly in the frontend
+            document.getElementById("progress1").value = progress1Value;
+            document.getElementById("progress2").value = progress2Value;
+
+            document.querySelector("#progress1 + .progress-text1").innerText = progress1Value + "%";
+            document.querySelector("#progress2 + .progress-text2").innerText = progress2Value + "%";
+        }
+    </script>
+        <a href="{{ url_for('Index') }}"><button class="btn">Menú principal</button></a>
+    </div>
+</body>
+</html>

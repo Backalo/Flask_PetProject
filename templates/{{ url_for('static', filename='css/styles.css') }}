@@ -1,0 +1,44 @@
+/* Reset default margin and padding for body */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Set background color and add paw and bone images */
+.background {
+    background-color: #f0f0f0;
+    background-image: url('../images/paws.png'), url('../images/paws.png');
+    background-position: top right, bottom left;
+    background-repeat: no-repeat, no-repeat;
+    background-size: 100px 100px, 100px 100px; /* Adjust the size as needed */
+}
+
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>PET FEEDER!</h1>
+        <a href="{{ url_for('Horarios') }}"><button class="btn">Horarios y porciones</button></a>
+        <a href="{{ url_for('Niveles') }}"><button class="btn">Niveles de depósito</button></a>
+        <a href="{{ url_for('Datos') }}"><button class="btn">Datos</button></a>
+        <a href="{{ url_for('Notificaciones') }}"><button class="btn">Notificaciones</button></a>
+    </div>
+</body>
+</html>
