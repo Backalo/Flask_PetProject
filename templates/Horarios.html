@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page 1</title>
+    <title>Horarios</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Horarios y porciones</h1>
+        <h1>Horarios</h1>
 
-        <!-- Select box for choosing the number of elements -->
+        <!-- Combobox to select the number of elements -->
         <label for="numberOfElements">Selecciona el número de elementos:</label>
-        <select id="numberOfElements" name="numberOfElements" onchange="updateTimeSelectors()">
+        <select id="numberOfElements" name="numberOfElements" onchange="comboboxChanged()">
             <option value="1" {% if numberOfElements == 1 %}selected{% endif %}>1</option>
             <option value="2" {% if numberOfElements == 2 %}selected{% endif %}>2</option>
             <option value="3" {% if numberOfElements == 3 %}selected{% endif %}>3</option>
@@ -20,64 +20,83 @@
             <option value="5" {% if numberOfElements == 5 %}selected{% endif %}>5</option>
         </select>
 
-        <!-- Container to dynamically display time selectors -->
+        <!-- Container for time selectors -->
         <div id="timeSelectorsContainer"></div>
 
-        <!-- Input for choosing another integer -->
-        <label for="anotherInteger">Ingresa otro número (####):</label>
-        <input type="number" id="anotherInteger" name="anotherInteger" min="0" step="1" required>
+        <!-- Button to update session -->
+        <button class="btn" onclick="updateSession()">Actualizar Sesión</button>
 
-        <!-- Button to submit the form -->
-        <button class="btn" onclick="submitForm()">Guardar Horarios y Porciones</button>
+        <script>
+            // JavaScript function to dynamically update time selectors
+            function updateTimeSelectors() {
+                var numberOfElements = document.getElementById("numberOfElements").value;
+                var container = document.getElementById("timeSelectorsContainer");
 
+                // Clear existing elements in the container
+                container.innerHTML = "";
+
+                // Create time selectors based on the selected number
+                for (var i = 0; i < numberOfElements; i++) {
+                    var label = document.createElement("label");
+                    label.innerHTML = "Selecciona una hora para el elemento " + (i + 1) + ": ";
+
+                    var inputTime = document.createElement("input");
+                    inputTime.type = "time";
+                    inputTime.name = "selectedTimes[]"; // Use an array for multiple time inputs
+                    inputTime.required = true;
+
+                    container.appendChild(label);
+                    container.appendChild(inputTime);
+                    container.appendChild(document.createElement("br"));
+                }
+            }
+
+            // JavaScript function to handle combobox change
+            function comboboxChanged() {
+                updateTimeSelectors();
+            }
+
+            // JavaScript function to handle form submission
+            function updateSession() {
+                var numberOfElements = document.getElementById("numberOfElements").value;
+                var selectedTimes = [];
+
+                // Retrieve selected times from the input fields
+                for (var i = 0; i < numberOfElements; i++) {
+                    var inputTime = document.getElementsByName("selectedTimes[]")[i];
+                    selectedTimes.push(inputTime.value);
+                }
+
+                // Prepare data for the POST request
+                var data = {
+                    'numberOfElements': numberOfElements,
+                    'selectedTimes': selectedTimes
+                };
+
+                // Send the data to the server using AJAX
+                fetch('/update_session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response from the server if needed
+                    console.log(data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+
+            // Initial call to populate time selectors based on default selection
+            updateTimeSelectors();
+        </script>
+
+        <!-- Link to the main menu -->
         <a href="{{ url_for('Index') }}"><button class="btn">Menú principal</button></a>
-
-    <script>
-        // JavaScript function to dynamically update time selectors
-        function updateTimeSelectors() {
-            var numberOfElements = document.getElementById("numberOfElements").value;
-            var container = document.getElementById("timeSelectorsContainer");
-
-            // Clear existing elements in the container
-            container.innerHTML = "";
-
-            // Create time selectors based on the selected number
-            for (var i = 0; i < numberOfElements; i++) {
-                var label = document.createElement("label");
-                label.innerHTML = "Selecciona una hora para el elemento " + (i + 1) + ": ";
-
-                var inputTime = document.createElement("input");
-                inputTime.type = "time";
-                inputTime.name = "selectedTimes[]"; // Use an array for multiple time inputs
-                inputTime.required = true;
-
-                container.appendChild(label);
-                container.appendChild(inputTime);
-                container.appendChild(document.createElement("br"));
-            }
-        }
-
-        // JavaScript function to handle form submission
-        function submitForm() {
-            // Retrieve selected values and perform necessary actions
-            var numberOfElements = document.getElementById("numberOfElements").value;
-            var selectedTimes = [];
-            var anotherInteger = document.getElementById("anotherInteger").value;
-
-            for (var i = 0; i < numberOfElements; i++) {
-                var inputTime = document.getElementsByName("selectedTimes[]")[i];
-                selectedTimes.push(inputTime.value);
-            }
-
-            // You can use these values as needed (e.g., send them to the server via AJAX)
-            console.log("Number of Elements:", numberOfElements);
-            console.log("Selected Times:", selectedTimes);
-            console.log("Another Integer:", anotherInteger);
-        }
-
-        // Initial call to populate time selectors based on default selection
-        updateTimeSelectors();
-    </script>
     </div>
 </body>
 </html>
