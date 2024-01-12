@@ -3,6 +3,8 @@ from flask import Flask, render_template, request, jsonify, session
 app = Flask(__name__)
 app.secret_key = '1234'
 
+sensor_progress = 50
+
 @app.route('/')
 def Index():
     return render_template('Index.html')
@@ -22,13 +24,15 @@ def Horarios():
 
 @app.route('/Niveles', methods=['GET', 'POST'])
 def Niveles():
-    try:
-        data = request.get_json()
-        progress1 = data.get('progress1', 50)
-        progress2 = data.get('progress2', 30)
-        return jsonify({'progress1': progress1, 'progress2': progress2})
-    except Exception as e:
-        return jsonify({'error': f'Invalid request - {str(e)}'})
+    if request.method == 'POST':
+        # Handle form submission
+        progress = int(request.form.get('progress'))
+        session['progress'] = progress
+    else:
+        # Default value or value from session
+        progress = session.get('progress', 0)
+
+    return render_template('Niveles.html', progress=progress)
     
 @app.route('/Datos')
 def Datos():
@@ -50,6 +54,28 @@ def update_session():
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': f'Invalid request - {str(e)}'})
+    
+@app.route('/update_progress', methods=['POST'])
+def update_progress():
+    try:
+        data = request.get_json()
+        session['progress'] = int(data.get('progress', 0))
+        return jsonify({'success': True, 'progress': session['progress']})
+    except Exception as e:
+        return jsonify({'error': f'Invalid request - {str(e)}'})
+
+@app.route('/get_sensor_value')
+def get_sensor_value():
+    global sensor_progress
+    # Simulate reading the sensor value (replace this with actual sensor reading)
+    sensor_progress = simulate_sensor_reading()
+    return jsonify({'progress': sensor_progress})
+
+def simulate_sensor_reading():
+    # Simulate reading the sensor value (replace this with actual sensor reading logic)
+    import random
+    return random.randint(0, 100)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

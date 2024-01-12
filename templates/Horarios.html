@@ -49,6 +49,15 @@
                     container.appendChild(inputTime);
                     container.appendChild(document.createElement("br"));
                 }
+
+                // Set the selected times if they exist
+                var selectedTimes = {{ session.get('selectedTimes') | tojson if session.get('selectedTimes') }};
+                if (selectedTimes) {
+                    var timeInputs = document.getElementsByName("selectedTimes[]");
+                    for (var i = 0; i < selectedTimes.length; i++) {
+                        timeInputs[i].value = selectedTimes[i];
+                    }
+                }
             }
 
             // JavaScript function to handle combobox change
