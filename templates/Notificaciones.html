@@ -3,15 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page 2</title>
+    <title>Notificaciones</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>Notificaciones</h1>
-        <p>The selected number from Horarios is: {{ numberOfElements }}</p>
 
+        <!-- Display notifications -->
+        <div id="notifications"></div>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+        <script>
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            // Function to update notifications
+            function updateNotifications(data) {
+                var notificationsDiv = document.getElementById("notifications");
+
+                // Clear existing notifications
+                notificationsDiv.innerHTML = "";
+
+                // Display notifications
+                if (data.notifications_1 && data.notifications_1.length > 0) {
+                    data.notifications_1.forEach(notification => {
+                        var notificationParagraph = document.createElement("p");
+                        notificationParagraph.textContent = notification;
+                        notificationsDiv.appendChild(notificationParagraph);
+                    });
+                }
+
+                if (data.notifications_2 && data.notifications_2.length > 0) {
+                    data.notifications_2.forEach(notification => {
+                        var notificationParagraph = document.createElement("p");
+                        notificationParagraph.textContent = notification;
+                        notificationsDiv.appendChild(notificationParagraph);
+                    });
+                }
+
+                if (!data.notifications_1 && !data.notifications_2) {
+                    var noNotificationsParagraph = document.createElement("p");
+                    noNotificationsParagraph.textContent = "No notifications";
+                    notificationsDiv.appendChild(noNotificationsParagraph);
+                }
+            }
+
+            // Listen for the 'update_notifications' event
+            socket.on('update_notifications', function(data) {
+                updateNotifications(data);
+            });
+
+            // Initial call to populate notifications
+            fetch('/get_notifications')  // Endpoint to get notifications
+                .then(response => response.json())
+                .then(data => updateNotifications(data))
+                .catch(error => console.error('Error fetching notifications:', error));
+        </script>
+
+        <!-- Link to the main menu -->
         <a href="{{ url_for('Index') }}"><button class="btn">Menú principal</button></a>
     </div>
 </body>

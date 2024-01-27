@@ -1,41 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Head content... -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niveles</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>Niveles</h1>
 
-        <!-- Input field for progress -->
-        <label for="progress">Nivel:</label>
-        <input type="number" id="progress" name="progress" min="0" max="100" value="{{ progress }}" readonly>
-
-        <!-- Progress bar -->
-        <div class="progress-bar">
-            <progress id="progressBar" max="100" value="{{ progress }}"></progress>
+        <!-- Display progress bars -->
+        <div>
+            <label for="progress_1">Sensor 1:</label>
+            <progress id="progress_1" value="0" max="100"></progress>
+        </div>
+        <div>
+            <label for="progress_2">Sensor 2:</label>
+            <progress id="progress_2" value="0" max="100"></progress>
         </div>
 
-        <script>
-            // Function to update progress bar
-            function updateProgressBar() {
-                fetch('/get_sensor_value')  // Endpoint to get the sensor value
-                    .then(response => response.json())
-                    .then(data => {
-                        var progressBar = document.getElementById("progressBar");
-                        var progressInput = document.getElementById("progress");
+        <!-- Display notifications -->
+        <div id="notifications"></div>
 
-                        progressBar.value = data.progress;
-                        progressInput.value = data.progress;
-                    })
-                    .catch(error => console.error('Error fetching sensor value:', error));
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+        <script>
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            // Function to update progress bars
+            function updateProgressBars(data) {
+                document.getElementById("progress_1").value = data.progress_1;
+                document.getElementById("progress_2").value = data.progress_2;
             }
 
-            // Update progress bar every 5 seconds (adjust as needed)
-            setInterval(updateProgressBar, 5000);
+            // Function to update notifications
+            function updateNotifications(data) {
+                var notificationsDiv = document.getElementById("notifications");
 
-            // Initial call to populate progress bar based on default value
-            updateProgressBar();
+                // Clear existing notifications
+                notificationsDiv.innerHTML = "";
+
+                // Display notifications
+                if (data.notifications_1 && data.notifications_1.length > 0) {
+                    data.notifications_1.forEach(notification => {
+                        var notificationParagraph = document.createElement("p");
+                        notificationParagraph.textContent = notification;
+                        notificationsDiv.appendChild(notificationParagraph);
+                    });
+                }
+
+                if (data.notifications_2 && data.notifications_2.length > 0) {
+                    data.notifications_2.forEach(notification => {
+                        var notificationParagraph = document.createElement("p");
+                        notificationParagraph.textContent = notification;
+                        notificationsDiv.appendChild(notificationParagraph);
+                    });
+                }
+
+                if (!data.notifications_1 && !data.notifications_2) {
+                    var noNotificationsParagraph = document.createElement("p");
+                    noNotificationsParagraph.textContent = "No notifications";
+                    notificationsDiv.appendChild(noNotificationsParagraph);
+                }
+            }
+
+            // Listen for the 'update_progress' event
+            socket.on('update_progress', function(data) {
+                updateProgressBars(data);
+            });
+
+            // Listen for the 'update_notifications' event
+            socket.on('update_notifications', function(data) {
+                updateNotifications(data);
+            });
+
+            // Initial call to populate progress bars and notifications
+            socket.on('connect', function() {
+                socket.emit('request_sensor_values');
+            });
         </script>
 
         <!-- Link to the main menu -->
