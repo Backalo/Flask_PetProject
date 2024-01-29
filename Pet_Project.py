@@ -18,20 +18,29 @@ notifications = {'notifications_1': notifications_1, 'notifications_2': notifica
 
 # Function to check notifications based on sensor progress
 def check_notifications(progress_1, progress_2):
-    global notifications_1, notifications_2
+    global sensor_progress_1, sensor_progress_2, notifications_1, notifications_2
     threshold = 10
 
+    # Check if progress_1 falls below the threshold
     if progress_1 < threshold:
-        notifications_1.insert(0, 'Food served')
+        # Add notification to "replenish food"
+        notifications_1.append('Replenish food')
+        socketio.emit('update_notifications', {'notifications_1': notifications_1})
+
+    # Check if progress_1 decreased from the previous value
+    if progress_1 < sensor_progress_1:
+        # Add notification that "food is served"
+        notifications_1.append('Food served')
+        socketio.emit('update_notifications', {'notifications_1': notifications_1})
+
+    # Update sensor_progress_1 for the next check
+    sensor_progress_1 = progress_1
+
+    # Check if progress_2 falls below the threshold
     if progress_2 < threshold:
-        notifications_2.insert(0, 'Water served')
-
-    # Keep only the latest 8 notifications
-    notifications_1 = notifications_1[:8]
-    notifications_2 = notifications_2[:8]
-
-    # Emit a WebSocket event to update clients
-    socketio.emit('update_notifications', {'notifications_1': notifications_1, 'notifications_2': notifications_2})
+        # Add notification to "replenish water"
+        notifications_2.append('Replenish water')
+        socketio.emit('update_notifications', {'notifications_2': notifications_2})
 
 @app.route('/')
 def Index():

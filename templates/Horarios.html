@@ -20,6 +20,15 @@
             <option value="5" {% if numberOfElements == 5 %}selected{% endif %}>5</option>
         </select>
 
+        <!-- Combobox to select another value -->
+        <label for="additionalValue">Selecciona un valor adicional:</label>
+        <select id="additionalValue" name="additionalValue" onchange="valueChanged()">
+            <option value="150">150</option>
+            <option value="200">200</option>
+            <option value="250">250</option>
+            <option value="300">300</option>
+        </select>
+
         <!-- Container for time selectors -->
         <div id="timeSelectorsContainer"></div>
 
@@ -63,6 +72,11 @@
             // JavaScript function to handle combobox change
             function comboboxChanged() {
                 updateTimeSelectors();
+            }
+
+            // JavaScript function to handle value change
+            function valueChanged() {
+                // Handle value change if needed
             }
 
             // JavaScript function to handle form submission

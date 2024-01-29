@@ -62,15 +62,18 @@
                     noNotificationsParagraph.textContent = "No notifications";
                     notificationsDiv.appendChild(noNotificationsParagraph);
                 }
+
+                // Handle new type of notification: "Food served"
+                if (data.new_notification) {
+                    var newNotificationParagraph = document.createElement("p");
+                    newNotificationParagraph.textContent = data.new_notification;
+                    notificationsDiv.appendChild(newNotificationParagraph);
+                }
             }
 
             // Listen for the 'update_progress' event
             socket.on('update_progress', function(data) {
                 updateProgressBars(data);
-            });
-
-            // Listen for the 'update_notifications' event
-            socket.on('update_notifications', function(data) {
                 updateNotifications(data);
             });
 
